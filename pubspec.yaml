@@ -1,0 +1,86 @@
+name: kas_finance_app
+description: "A modern Money Lover app built with Flutter and Firebase"
+publish_to: "none"
+version: 1.0.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase
+  firebase_core: ^3.4.0
+  firebase_auth: ^5.2.0
+  cloud_firestore: ^5.3.0
+  firebase_messaging: ^15.1.0
+  firebase_storage: ^12.2.0
+
+  # Authentication
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^6.1.1
+
+  # Local Storage
+  shared_preferences: ^2.3.2
+  flutter_secure_storage: ^9.2.2
+  drift: ^2.18.0
+  sqlite3_flutter_libs: ^0.5.24
+  sqlite3: ^2.4.6
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # State Management
+  provider: ^6.1.2
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+  bloc: ^8.1.4
+
+  # UI & Charts
+  fl_chart: ^0.69.0
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10+1
+
+  # Utilities
+  http: ^1.2.2
+  uuid: ^4.5.0
+  intl: ^0.19.0
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.4
+  get_it: ^7.7.0
+  injectable: ^2.4.4
+
+  # Notifications
+  flutter_local_notifications: ^17.2.2
+
+  # Camera & Image
+  camera: ^0.11.0+2
+  image_picker: ^1.1.2
+
+  # Biometrics
+  local_auth: ^2.3.0
+
+  csv: ^6.0.0
+
+  # Animations
+  animations: ^2.0.11
+  lottie: ^3.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  drift_dev: ^2.18.0
+  build_runner: ^2.4.12
+  json_serializable: ^6.8.0
+  freezed: ^2.5.7
+  injectable_generator: ^2.6.2
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
