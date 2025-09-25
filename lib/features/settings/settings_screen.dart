@@ -5,7 +5,6 @@ import '../../providers/theme_provider.dart';
 import 'widgets/profile_section.dart';
 import 'widgets/guest_actions_section.dart';
 import 'widgets/settings_section.dart';
-import 'widgets/account_actions_section.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

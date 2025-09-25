@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/transaction_provider.dart';
+import '../../../providers/budget_provider.dart';
 import '../../../models/transaction_model.dart';
 
 class AddTransactionModal extends StatefulWidget {
@@ -55,6 +56,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
       context,
       listen: false,
     );
+    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
     if (authProvider.user == null) return;
 
@@ -73,6 +75,10 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
     final success = await transactionProvider.addTransaction(transaction);
 
     if (success && mounted) {
+      // Recalculate budgets to reflect the new transaction
+      await budgetProvider.updateBudgetSpending(
+        transactionProvider.allTransactions,
+      );
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

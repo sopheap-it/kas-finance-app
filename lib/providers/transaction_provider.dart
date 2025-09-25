@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
 import '../core/core.dart';
 import '../core/database/database_service.dart';
 
 class TransactionProvider with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late final AppDatabase _database;
 
   List<TransactionModel> _transactions = [];
@@ -89,6 +87,9 @@ class TransactionProvider with ChangeNotifier {
       _transactions = dbTransactions
           .map((t) => TransactionModel.fromDatabase(t))
           .toList();
+
+      // Migrate any legacy categoryIds from older demo data to current IDs
+      await _migrateLegacyCategoryIdsIfNeeded();
       notifyListeners();
 
       // Firebase sync disabled for phase 1 - only use local storage
@@ -118,50 +119,20 @@ class TransactionProvider with ChangeNotifier {
         return;
       }
 
-      // Create demo categories if not already loaded
+      // Ensure categories list is loaded from database
       if (_categories.isEmpty) {
-        _categories = [
-          CategoryModel(
-            id: 'income',
-            name: 'Income',
-            iconName: 'trending_up',
-            color: Colors.green,
-            type: 'income',
-            isDefault: true,
-          ),
-          CategoryModel(
-            id: 'food',
-            name: 'Food & Dining',
-            iconName: 'restaurant',
-            color: Colors.orange,
-            type: 'expense',
-            isDefault: true,
-          ),
-          CategoryModel(
-            id: 'transport',
-            name: 'Transportation',
-            iconName: 'directions_car',
-            color: Colors.blue,
-            type: 'expense',
-            isDefault: true,
-          ),
-          CategoryModel(
-            id: 'entertainment',
-            name: 'Entertainment',
-            iconName: 'movie',
-            color: Colors.purple,
-            type: 'expense',
-            isDefault: true,
-          ),
-          CategoryModel(
-            id: 'shopping',
-            name: 'Shopping',
-            iconName: 'shopping_bag',
-            color: Colors.pink,
-            type: 'expense',
-            isDefault: true,
-          ),
-        ];
+        final dbCategories = await _database.getAllCategories();
+        _categories = dbCategories
+            .map((c) => CategoryModel.fromDatabase(c))
+            .toList();
+      }
+
+      String? _categoryIdByName(String name) {
+        try {
+          return _categories.firstWhere((c) => c.name == name).id;
+        } catch (_) {
+          return null;
+        }
       }
 
       // Create demo transactions and save to database
@@ -172,7 +143,10 @@ class TransactionProvider with ChangeNotifier {
           amount: 2500.00,
           title: 'Salary',
           description: 'Monthly salary payment',
-          categoryId: 'income',
+          categoryId:
+              _categoryIdByName('Salary') ??
+              _categoryIdByName('Business') ??
+              _categories.firstWhere((c) => c.type == 'income').id,
           type: TransactionType.income,
           date: DateTime.now().subtract(const Duration(days: 5)),
         ),
@@ -182,7 +156,10 @@ class TransactionProvider with ChangeNotifier {
           amount: 700.00,
           title: 'Freelance Work',
           description: 'Web development project',
-          categoryId: 'income',
+          categoryId:
+              _categoryIdByName('Business') ??
+              _categoryIdByName('Salary') ??
+              _categories.firstWhere((c) => c.type == 'income').id,
           type: TransactionType.income,
           date: DateTime.now().subtract(const Duration(days: 10)),
         ),
@@ -192,7 +169,9 @@ class TransactionProvider with ChangeNotifier {
           amount: 120.50,
           title: 'Grocery Shopping',
           description: 'Weekly groceries',
-          categoryId: 'food',
+          categoryId:
+              _categoryIdByName('Food & Dining') ??
+              _categories.firstWhere((c) => c.type == 'expense').id,
           type: TransactionType.expense,
           date: DateTime.now().subtract(const Duration(days: 2)),
         ),
@@ -202,7 +181,9 @@ class TransactionProvider with ChangeNotifier {
           amount: 85.00,
           title: 'Gas Station',
           description: 'Fuel for car',
-          categoryId: 'transport',
+          categoryId:
+              _categoryIdByName('Transportation') ??
+              _categories.firstWhere((c) => c.type == 'expense').id,
           type: TransactionType.expense,
           date: DateTime.now().subtract(const Duration(days: 1)),
         ),
@@ -212,7 +193,9 @@ class TransactionProvider with ChangeNotifier {
           amount: 45.99,
           title: 'Netflix Subscription',
           description: 'Monthly streaming service',
-          categoryId: 'entertainment',
+          categoryId:
+              _categoryIdByName('Entertainment') ??
+              _categories.firstWhere((c) => c.type == 'expense').id,
           type: TransactionType.expense,
           date: DateTime.now().subtract(const Duration(days: 15)),
         ),
@@ -222,7 +205,9 @@ class TransactionProvider with ChangeNotifier {
           amount: 200.00,
           title: 'Restaurant',
           description: 'Dinner with friends',
-          categoryId: 'food',
+          categoryId:
+              _categoryIdByName('Food & Dining') ??
+              _categories.firstWhere((c) => c.type == 'expense').id,
           type: TransactionType.expense,
           date: DateTime.now().subtract(const Duration(days: 3)),
         ),
@@ -239,6 +224,55 @@ class TransactionProvider with ChangeNotifier {
       _setError('Failed to load demo data: $e');
     } finally {
       _setLoading(false);
+    }
+  }
+
+  // One-time migration to map legacy demo category ids (e.g. 'food')
+  // to the seeded database category ids (e.g. 'expense_food').
+  Future<void> _migrateLegacyCategoryIdsIfNeeded() async {
+    if (_categories.isEmpty) {
+      final dbCategories = await _database.getAllCategories();
+      _categories = dbCategories
+          .map((c) => CategoryModel.fromDatabase(c))
+          .toList();
+    }
+
+    final Map<String, String> nameToId = {
+      for (final c in _categories) c.name: c.id,
+    };
+
+    bool updated = false;
+    for (final t in List<TransactionModel>.from(_transactions)) {
+      String? mappedId;
+      switch (t.categoryId) {
+        case 'income':
+          mappedId = nameToId['Salary'] ?? nameToId['Business'];
+          break;
+        case 'food':
+          mappedId = nameToId['Food & Dining'];
+          break;
+        case 'transport':
+          mappedId = nameToId['Transportation'];
+          break;
+        case 'entertainment':
+          mappedId = nameToId['Entertainment'];
+          break;
+        case 'shopping':
+          mappedId = nameToId['Shopping'];
+          break;
+      }
+
+      if (mappedId != null && mappedId != t.categoryId) {
+        final updatedTx = t.copyWith(categoryId: mappedId);
+        await _database.updateTransaction(updatedTx.toCompanion());
+        final idx = _transactions.indexWhere((x) => x.id == t.id);
+        if (idx != -1) _transactions[idx] = updatedTx;
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      notifyListeners();
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../providers/transaction_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/budget_provider.dart';
 import '../../models/transaction_model.dart';
 import '../../models/category_model.dart';
 import '../../core/widgets/app_button.dart';
@@ -91,6 +92,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         context,
         listen: false,
       );
+      final budgetProvider = Provider.of<BudgetProvider>(
+        context,
+        listen: false,
+      );
 
       final transaction = TransactionModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -106,6 +111,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       final success = await transactionProvider.addTransaction(transaction);
 
       if (success && mounted) {
+        // Recalculate budgets based on latest transactions
+        await budgetProvider.updateBudgetSpending(
+          transactionProvider.allTransactions,
+        );
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

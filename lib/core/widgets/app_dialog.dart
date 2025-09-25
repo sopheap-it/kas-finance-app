@@ -41,67 +41,76 @@ class AppDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
+        constraints: BoxConstraints(
+          maxWidth: maxWidth,
+          // Prevent overflow on small screens by limiting height
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon
-              if (icon != null) ...[
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: context.colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: context.colorScheme.primary,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Title
-              Text(
-                title,
-                style:
-                    titleStyle ??
-                    context.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                if (icon != null) ...[
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: context.colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(32),
                     ),
-                textAlign: TextAlign.center,
-              ),
-
-              // Content
-              if (content != null || contentWidget != null) ...[
-                const SizedBox(height: 16),
-                if (contentWidget != null)
-                  contentWidget!
-                else
-                  Text(
-                    content!,
-                    style:
-                        contentStyle ??
-                        context.textTheme.bodyMedium?.copyWith(
-                          color: context.colorScheme.onSurface.withOpacity(0.7),
-                        ),
-                    textAlign: TextAlign.center,
+                    child: Icon(
+                      icon,
+                      color: context.colorScheme.primary,
+                      size: 32,
+                    ),
                   ),
-              ],
+                  const SizedBox(height: 16),
+                ],
 
-              // Actions
-              if (actions != null && actions!.isNotEmpty) ...[
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: actions!,
+                // Title
+                Text(
+                  title,
+                  style:
+                      titleStyle ??
+                      context.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                  textAlign: TextAlign.center,
                 ),
+
+                // Content
+                if (content != null || contentWidget != null) ...[
+                  const SizedBox(height: 16),
+                  if (contentWidget != null)
+                    contentWidget!
+                  else
+                    Text(
+                      content!,
+                      style:
+                          contentStyle ??
+                          context.textTheme.bodyMedium?.copyWith(
+                            color: context.colorScheme.onSurface.withOpacity(
+                              0.7,
+                            ),
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                ],
+
+                // Actions
+                if (actions != null && actions!.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: actions!,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -160,7 +169,7 @@ class AppDialog extends StatelessWidget {
         icon: icon ?? Icons.info_outline,
         actions: [
           ElevatedButton(
-            onPressed: () => context.pop(),
+            onPressed: () => context.pop<void>(),
             child: Text(buttonText),
           ),
         ],
@@ -182,7 +191,7 @@ class AppDialog extends StatelessWidget {
         icon: Icons.error_outline,
         actions: [
           ElevatedButton(
-            onPressed: () => context.pop(),
+            onPressed: () => context.pop<void>(),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colorScheme.error,
             ),
@@ -207,7 +216,7 @@ class AppDialog extends StatelessWidget {
         icon: Icons.check_circle_outline,
         actions: [
           ElevatedButton(
-            onPressed: () => context.pop(),
+            onPressed: () => context.pop<void>(),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
             child: Text(buttonText),
           ),
@@ -343,6 +352,6 @@ extension DialogExtensions on BuildContext {
 
   /// Hide loading dialog
   void hideLoadingDialog() {
-    pop();
+    pop<void>();
   }
 }

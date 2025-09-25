@@ -62,10 +62,10 @@ class _MainScreenState extends State<MainScreen> {
         transactionProvider.allTransactions,
       );
     } else if (authProvider.isGuestMode) {
-      // Load demo data for guest users
+      // Do not load demo data for guest users; start empty
       await Future.wait([
-        transactionProvider.loadDemoData(),
-        budgetProvider.loadDemoData(),
+        transactionProvider.loadTransactions(userId: 'guest'),
+        budgetProvider.loadBudgets(userId: 'guest'),
       ]);
     }
   }

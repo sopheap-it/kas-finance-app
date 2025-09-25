@@ -7,13 +7,25 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
+  static bool _initialized = false;
 
   static Future<void> init() async {
-    // Initialize Firebase Messaging
-    await _initFirebaseMessaging();
+    try {
+      // Initialize Firebase Messaging
+      await _initFirebaseMessaging();
 
-    // Initialize Local Notifications
-    await _initLocalNotifications();
+      // Initialize Local Notifications
+      await _initLocalNotifications();
+
+      _initialized = true;
+    } catch (e) {
+      // In production we should log this. Avoid crashing the app if
+      // notifications are misconfigured.
+      _initialized = false;
+      if (kDebugMode) {
+        print('NotificationService initialization failed: $e');
+      }
+    }
   }
 
   static Future<void> _initFirebaseMessaging() async {
@@ -86,6 +98,12 @@ class NotificationService {
     required String body,
     String? payload,
   }) async {
+    if (!_initialized) {
+      if (kDebugMode) {
+        print('NotificationService not initialized. Skipping notification.');
+      }
+      return;
+    }
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
           'kas_finance_channel',
@@ -104,13 +122,19 @@ class NotificationService {
       iOS: iOSNotificationDetails,
     );
 
-    await _localNotifications.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
-      body,
-      notificationDetails,
-      payload: payload,
-    );
+    try {
+      await _localNotifications.show(
+        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title,
+        body,
+        notificationDetails,
+        payload: payload,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to show local notification: $e');
+      }
+    }
   }
 
   static Future<void> showBudgetAlert({
