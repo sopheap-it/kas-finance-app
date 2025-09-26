@@ -183,51 +183,116 @@ class _MainScreenState extends State<MainScreen> {
         ),
         child: Container(
           height: 70,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(
-                context,
-                theme,
-                index: 0,
-                icon: Icons.dashboard_outlined,
-                activeIcon: Icons.dashboard,
-                label: 'Dashboard',
-              ),
-              _buildNavItem(
-                context,
-                theme,
-                index: 1,
-                icon: Icons.receipt_long_outlined,
-                activeIcon: Icons.receipt_long,
-                label: 'Transactions',
-              ),
-              _buildNavItem(
-                context,
-                theme,
-                index: 2,
-                icon: Icons.account_balance_wallet_outlined,
-                activeIcon: Icons.account_balance_wallet,
-                label: 'Budgets',
-              ),
-              _buildNavItem(
-                context,
-                theme,
-                index: 3,
-                icon: Icons.analytics_outlined,
-                activeIcon: Icons.analytics,
-                label: 'Reports',
-              ),
-              _buildNavItem(
-                context,
-                theme,
-                index: 4,
-                icon: Icons.settings_outlined,
-                activeIcon: Icons.settings,
-                label: 'Settings',
-              ),
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Check if screen is too narrow for 5 items
+              final isNarrowScreen = constraints.maxWidth < 400;
+
+              if (isNarrowScreen) {
+                // Use a scrollable row for narrow screens
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildNavItem(
+                        context,
+                        theme,
+                        index: 0,
+                        icon: Icons.dashboard_outlined,
+                        activeIcon: Icons.dashboard,
+                        label: 'Dashboard',
+                        isCompact: true,
+                      ),
+                      _buildNavItem(
+                        context,
+                        theme,
+                        index: 1,
+                        icon: Icons.receipt_long_outlined,
+                        activeIcon: Icons.receipt_long,
+                        label: 'Transactions',
+                        isCompact: true,
+                      ),
+                      _buildNavItem(
+                        context,
+                        theme,
+                        index: 2,
+                        icon: Icons.account_balance_wallet_outlined,
+                        activeIcon: Icons.account_balance_wallet,
+                        label: 'Events',
+                        isCompact: true,
+                      ),
+                      _buildNavItem(
+                        context,
+                        theme,
+                        index: 3,
+                        icon: Icons.analytics_outlined,
+                        activeIcon: Icons.analytics,
+                        label: 'Reports',
+                        isCompact: true,
+                      ),
+                      _buildNavItem(
+                        context,
+                        theme,
+                        index: 4,
+                        icon: Icons.settings_outlined,
+                        activeIcon: Icons.settings,
+                        label: 'Settings',
+                        isCompact: true,
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                // Use normal row for wider screens
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildNavItem(
+                      context,
+                      theme,
+                      index: 0,
+                      icon: Icons.dashboard_outlined,
+                      activeIcon: Icons.dashboard,
+                      label: 'Dashboard',
+                    ),
+                    _buildNavItem(
+                      context,
+                      theme,
+                      index: 1,
+                      icon: Icons.receipt_long_outlined,
+                      activeIcon: Icons.receipt_long,
+                      label: 'Transactions',
+                    ),
+                    _buildNavItem(
+                      context,
+                      theme,
+                      index: 2,
+                      icon: Icons.account_balance_wallet_outlined,
+                      activeIcon: Icons.account_balance_wallet,
+                      label: 'Events',
+                    ),
+                    _buildNavItem(
+                      context,
+                      theme,
+                      index: 3,
+                      icon: Icons.analytics_outlined,
+                      activeIcon: Icons.analytics,
+                      label: 'Reports',
+                    ),
+                    _buildNavItem(
+                      context,
+                      theme,
+                      index: 4,
+                      icon: Icons.settings_outlined,
+                      activeIcon: Icons.settings,
+                      label: 'Settings',
+                    ),
+                  ],
+                );
+              }
+            },
           ),
         ),
       ),
@@ -241,6 +306,7 @@ class _MainScreenState extends State<MainScreen> {
     required IconData icon,
     required IconData activeIcon,
     required String label,
+    bool isCompact = false,
   }) {
     final isSelected = _currentIndex == index;
     final colorScheme = theme.colorScheme;
@@ -250,7 +316,10 @@ class _MainScreenState extends State<MainScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: EdgeInsets.symmetric(
+          horizontal: isCompact ? 4 : 8,
+          vertical: 4,
+        ),
         decoration: BoxDecoration(
           color: isSelected
               ? colorScheme.primary.withOpacity(0.1)
@@ -288,7 +357,7 @@ class _MainScreenState extends State<MainScreen> {
                 color: isSelected
                     ? Colors.white
                     : colorScheme.onSurface.withOpacity(0.6),
-                size: 18,
+                size: isCompact ? 16 : 18,
               ),
             ),
             const SizedBox(height: 2),
@@ -300,7 +369,7 @@ class _MainScreenState extends State<MainScreen> {
                         ? colorScheme.primary
                         : colorScheme.onSurface.withOpacity(0.6),
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    fontSize: 10,
+                    fontSize: isCompact ? 9 : 10,
                   ) ??
                   const TextStyle(),
               child: Text(label),

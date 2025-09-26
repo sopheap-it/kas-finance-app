@@ -17,7 +17,7 @@ class BudgetsScreen extends StatelessWidget {
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text('Budgets'),
+      title: const Text('Events'),
       automaticallyImplyLeading: false,
       actions: [
         IconButton(

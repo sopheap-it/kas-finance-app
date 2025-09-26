@@ -4,7 +4,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/transaction_provider.dart';
 import '../../providers/budget_provider.dart';
 import 'widgets/dashboard_header.dart';
-import 'widgets/guest_mode_banner.dart';
 import 'widgets/balance_card.dart';
 import 'widgets/quick_actions.dart';
 import 'widgets/expense_chart.dart';

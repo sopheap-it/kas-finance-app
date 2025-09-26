@@ -93,7 +93,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
       AppDialog.showInfo(
         context,
         title: 'Missing Category',
-        message: 'Please select a category for this budget.',
+        message: 'Please select a category for this event.',
       );
       return;
     }
@@ -137,7 +137,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
         AppDialog.showInfo(
           context,
           title: 'Error',
-          message: 'Failed to create budget: $e',
+          message: 'Failed to create event: $e',
         );
       }
     } finally {
@@ -155,7 +155,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Budget'),
+        title: const Text('Create Event'),
         backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.colorScheme.onSurface,
         elevation: 0,
@@ -179,7 +179,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  hintText: 'Enter budget name',
+                  hintText: 'Enter event name',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -188,7 +188,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a budget name';
+                    return 'Please enter an event name';
                   }
                   return null;
                 },
@@ -217,7 +217,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a budget amount';
+                    return 'Please enter an event amount';
                   }
                   final amount = double.tryParse(value);
                   if (amount == null || amount <= 0) {
@@ -396,7 +396,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
 
               // Save Button
               AppButton(
-                text: 'Create Budget',
+                text: 'Create Event',
                 onPressed: _isLoading ? null : _saveBudget,
                 isLoading: _isLoading,
                 backgroundColor: Colors.blue,

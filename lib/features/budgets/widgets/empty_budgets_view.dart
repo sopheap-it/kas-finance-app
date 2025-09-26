@@ -18,14 +18,14 @@ class EmptyBudgetsView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No budgets yet',
+            'No events yet',
             style: theme.textTheme.headlineSmall?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Create your first budget to track spending',
+            'Create your first event to track spending',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),

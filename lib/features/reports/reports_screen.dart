@@ -390,6 +390,18 @@ class ReportsScreen extends StatelessWidget {
         }
       }
 
+      // Calculate income by category
+      final incomeByCategory = <String, double>{};
+      for (final transaction in provider.transactions) {
+        if (transaction.type == TransactionType.income) {
+          final category =
+              provider.getCategoryById(transaction.categoryId)?.name ??
+              'Unknown';
+          incomeByCategory[category] =
+              (incomeByCategory[category] ?? 0) + transaction.amount;
+        }
+      }
+
       pdf.addPage(
         pw.MultiPage(
           pageTheme: const pw.PageTheme(
@@ -442,7 +454,22 @@ class ReportsScreen extends StatelessWidget {
                 ),
               ),
               pw.SizedBox(height: 15),
-              _buildCategoryBreakdown(expenseByCategory),
+              _buildCategoryBreakdown(expenseByCategory, PdfColors.red),
+              pw.SizedBox(height: 30),
+            ],
+
+            // Income breakdown by category
+            if (incomeByCategory.isNotEmpty) ...[
+              pw.Text(
+                'Income Breakdown by Category',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.blue800,
+                ),
+              ),
+              pw.SizedBox(height: 15),
+              _buildCategoryBreakdown(incomeByCategory, PdfColors.green),
               pw.SizedBox(height: 30),
             ],
 
@@ -652,8 +679,11 @@ class ReportsScreen extends StatelessWidget {
     );
   }
 
-  pw.Widget _buildCategoryBreakdown(Map<String, double> expenseByCategory) {
-    final sortedCategories = expenseByCategory.entries.toList()
+  pw.Widget _buildCategoryBreakdown(
+    Map<String, double> categoryData,
+    PdfColor amountColor,
+  ) {
+    final sortedCategories = categoryData.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return pw.Container(
@@ -685,7 +715,7 @@ class ReportsScreen extends StatelessWidget {
                       style: pw.TextStyle(
                         fontSize: 12,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.red,
+                        color: amountColor,
                       ),
                       textAlign: pw.TextAlign.right,
                     ),

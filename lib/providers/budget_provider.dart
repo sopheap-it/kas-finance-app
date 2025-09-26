@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../core/database/app_database.dart';
 import '../core/database/database_service.dart';
 import '../models/budget_model.dart';
@@ -7,7 +6,6 @@ import '../models/transaction_model.dart';
 import '../services/notification_service.dart';
 
 class BudgetProvider with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late final AppDatabase _databaseService;
 
   List<BudgetModel> _budgets = [];
@@ -22,7 +20,8 @@ class BudgetProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   BudgetProvider() {
-    _initializeDatabase();
+    // Defer initialization to avoid notifyListeners during widget build
+    Future.microtask(_initializeDatabase);
   }
 
   Future<void> _initializeDatabase() async {

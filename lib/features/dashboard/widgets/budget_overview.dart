@@ -32,7 +32,7 @@ class BudgetOverview extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'No active budgets',
+                    'No active events',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withOpacity(0.6),
                     ),
@@ -53,7 +53,7 @@ class BudgetOverview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Budget Overview',
+                'Event Overview',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

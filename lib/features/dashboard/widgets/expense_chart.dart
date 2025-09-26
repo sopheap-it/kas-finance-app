@@ -67,6 +67,8 @@ class ExpenseChart extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              _buildLegend(theme, expensesByCategory),
             ],
           ),
         );
@@ -102,5 +104,45 @@ class ExpenseChart extends StatelessWidget {
         ),
       );
     }).toList();
+  }
+
+  Widget _buildLegend(ThemeData theme, Map<String, double> data) {
+    final total = data.values.fold(0.0, (a, b) => a + b);
+    final colors = [
+      Colors.blue,
+      Colors.red,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+    ];
+
+    int index = 0;
+    return Wrap(
+      spacing: 12,
+      runSpacing: 8,
+      children: data.entries.map((entry) {
+        final color = colors[index % colors.length];
+        final percent = total == 0 ? 0 : (entry.value / total) * 100;
+        index++;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '${entry.key} (${percent.toStringAsFixed(1)}%)',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ],
+        );
+      }).toList(),
+    );
   }
 }

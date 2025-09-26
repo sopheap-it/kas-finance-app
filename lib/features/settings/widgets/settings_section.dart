@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/theme_provider.dart';
+import '../category_management_screen.dart';
 
 class SettingsSection extends StatelessWidget {
   final AuthProvider authProvider;
@@ -24,6 +25,8 @@ class SettingsSection extends StatelessWidget {
           _buildNotificationsTile(),
           const Divider(),
           _buildLanguageTile(),
+          const Divider(),
+          _buildCategoryManagementTile(),
         ],
       ),
     );
@@ -77,6 +80,24 @@ class SettingsSection extends StatelessWidget {
       onTap: () {
         // TODO: Navigate to language settings
       },
+    );
+  }
+
+  Widget _buildCategoryManagementTile() {
+    return Builder(
+      builder: (context) => ListTile(
+        leading: const Icon(Icons.category),
+        title: const Text('Category Management'),
+        subtitle: const Text('Manage income and expense categories'),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (context) => const CategoryManagementScreen(),
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -364,6 +364,33 @@ class TransactionProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> updateCategory(CategoryModel category) async {
+    try {
+      await _database.updateCategory(category.toCompanion());
+      final index = _categories.indexWhere((c) => c.id == category.id);
+      if (index != -1) {
+        _categories[index] = category;
+        notifyListeners();
+      }
+      return true;
+    } catch (e) {
+      _setError('Failed to update category: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteCategory(String categoryId) async {
+    try {
+      await _database.deleteCategory(categoryId);
+      _categories.removeWhere((c) => c.id == categoryId);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError('Failed to delete category: $e');
+      return false;
+    }
+  }
+
   Future<void> _syncWithFirestore(String userId) async {
     // Firebase sync disabled for phase 1 - only use local storage
     // TODO: Enable Firebase sync in future phases

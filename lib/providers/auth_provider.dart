@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:local_auth/local_auth.dart';
+// import 'package:local_auth/local_auth.dart';  // Removed to reduce APK size
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user_model.dart';
 
@@ -11,7 +11,7 @@ class AuthProvider with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final LocalAuthentication _localAuth = LocalAuthentication();
+  // final LocalAuthentication _localAuth = LocalAuthentication();  // Removed to reduce APK size
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   User? _firebaseUser;
@@ -299,6 +299,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<bool> enableBiometric() async {
+    // Biometric authentication disabled to reduce APK size
+    _setError('Biometric authentication is not available in this build');
+    return false;
+
+    /* Commented out to reduce APK size
     try {
       final isAvailable = await _localAuth.canCheckBiometrics;
       if (!isAvailable) {
@@ -325,9 +330,14 @@ class AuthProvider with ChangeNotifier {
       _setError('Failed to enable biometric: $e');
       return false;
     }
+    */
   }
 
   Future<bool> authenticateWithBiometric() async {
+    // Biometric authentication disabled to reduce APK size
+    return false;
+
+    /* Commented out to reduce APK size
     try {
       if (!_isBiometricEnabled) return false;
 
@@ -344,6 +354,7 @@ class AuthProvider with ChangeNotifier {
       _setError('Biometric authentication failed: $e');
       return false;
     }
+    */
   }
 
   Future<bool> setPIN(String pin) async {

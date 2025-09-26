@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/transaction_model.dart';
 import '../../transactions/add_transaction_screen.dart';
+// Removed transactions screen import as we no longer navigate there from quick actions
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});

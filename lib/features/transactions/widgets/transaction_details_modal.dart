@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../models/transaction_model.dart';
 import '../../../providers/transaction_provider.dart';
+import '../../../providers/budget_provider.dart';
 import '../../../core/core.dart';
+import '../edit_transaction_screen.dart';
 
 class TransactionDetailsModal extends StatelessWidget {
   final TransactionModel transaction;
@@ -168,9 +170,12 @@ class TransactionDetailsModal extends StatelessWidget {
   }
 
   void _editTransaction(BuildContext context) {
-    // TODO: Implement edit transaction
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit transaction coming soon')),
+    Navigator.pop(context); // Close the modal first
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => EditTransactionScreen(transaction: transaction),
+      ),
     );
   }
 
@@ -189,11 +194,25 @@ class TransactionDetailsModal extends StatelessWidget {
     }
   }
 
-  void _deleteTransaction(BuildContext context) {
-    final provider = Provider.of<TransactionProvider>(context, listen: false);
-    provider.deleteTransaction(transaction.id);
+  void _deleteTransaction(BuildContext context) async {
+    final transactionProvider = Provider.of<TransactionProvider>(
+      context,
+      listen: false,
+    );
+    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
 
-    Navigator.pop(context); // Close modal
-    context.showSuccessSnackBar('Transaction deleted');
+    final success = await transactionProvider.deleteTransaction(transaction.id);
+
+    if (success) {
+      // Update budget calculations after deletion
+      await budgetProvider.updateBudgetSpending(
+        transactionProvider.allTransactions,
+      );
+
+      Navigator.pop(context); // Close modal
+      context.showSuccessSnackBar('Transaction deleted');
+    } else {
+      context.showErrorSnackBar('Failed to delete transaction');
+    }
   }
 }

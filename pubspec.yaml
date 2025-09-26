@@ -53,22 +53,23 @@ dependencies:
   # Notifications
   flutter_local_notifications: ^17.2.2
 
-  # Camera & Image
-  camera: ^0.11.0+2
+  # Camera & Image (Optional - can be removed if not needed)
+  # camera: ^0.11.0+2
   image_picker: ^1.1.2
 
-  # Biometrics
-  local_auth: ^2.3.0
+  # Biometrics (Optional - can be removed if not needed)
+  # local_auth: ^2.3.0
 
+  # File Export (Keep only what's used)
   csv: ^6.0.0
   pdf: ^3.10.7
   printing: ^5.13.3
-  excel: ^4.0.3
+  # excel: ^4.0.3  # Remove if not used
   share_plus: ^10.0.2
 
-  # Animations
-  animations: ^2.0.11
-  lottie: ^3.1.2
+  # Animations (Optional - can be removed if not needed)
+  # animations: ^2.0.11
+  # lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -85,8 +86,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/logo/logo.png
-    - assets/images/logo/kas-logo-60px.png
-    - assets/images/
-    - assets/icons/
-    - assets/animations/
+    - assets/images/logo/kas-logo-60px.png # Only keep the optimized logo
+    - assets/images/logo/logo.png # Remove large logo
+    # - assets/images/  # Remove if not needed
+    # - assets/icons/  # Remove if not needed
+    # - assets/animations/  # Remove if not needed
